@@ -6,6 +6,7 @@ export const createPlateau = (input: string[]) => {
 
 export type Plateau = ReturnType<typeof createPlateau>;
 export type Rover = ReturnType<typeof readInitialPosition>;
+export type History = ReturnType<typeof recordMoves>;
 
 export const readInitialPosition = (position: string[], moves: string, plateau: Plateau) => {
     const x = parseInt(position[0]);
@@ -70,26 +71,31 @@ export const moveForward = (x: number, y: number, dir: string) => {
 
 export const recordMoves = (rover: Rover, plateau: Plateau) => {
     let { dir, x, y } = rover;
-
+    let position = { x, y, dir };
+    let movesHistory = [position];
     for (const move of rover.moves) {
         if (move === 'R') {
             dir = rotateRight(dir);
+            position = { x, y , dir }
         };
 
         if (move === 'L') {
             dir = rotateLeft(dir);
+            position = { x, y , dir }
         };
 
         if (move === 'M') {
             const { newX, newY } = moveForward(x, y, dir);
             
             if (newX > plateau.maxX || newY > plateau.maxY || newX < 0 || newY < 0) {
-                return { x, y, dir };
+                position = { x, y , dir }
             }
 
             x = newX;
             y = newY;
+            position = { x, y , dir }
         };
+        movesHistory.push(position);
     } 
-    return `${x} ${y} ${dir}`;
+    return movesHistory;   
 }

@@ -1,26 +1,35 @@
 import { useState } from 'react'
 import { createPlateau, readInitialPosition, recordMoves } from './Rover'
-import { Rover, Plateau } from './Rover'
+import { Rover, Plateau, History } from './Rover'
+import { Grid } from './Grid';
+import './App.css';
 
 const App = () => {
-  const [instructions, setInstructions] = useState("5 5\n1 2 N\nLLMLMLMLMM");
-  const rovers: Rover[] = [];
+  const [instructions, setInstructions] = useState<string>("");
+  const [rovers, setRovers] = useState<Rover[]>([]);
+  const [plateau, setPlateau] = useState<Plateau | null>(null);
+  const [allHistory, setAllHistory] = useState<History[]>([]);
 
-  const addInstructions = (e: React.MouseEvent<HTMLButtonElement>) => {
-    const plateau = createPlateau(instructions.split("\n")[0].split(" "));
+  const addInstructions = () => {
+    const newPlateau = createPlateau(instructions.split("\n")[0].split(" "));
+      setPlateau(newPlateau);
+
+      const newRovers: Rover[] = [];
+      const newHistory: History[] = [];
+
     for (let i = 1; i < instructions.split("\n").length; i = i + 2) {
       const position = instructions.split("\n")[i].split(" ");
       const moves = instructions.split("\n")[i + 1];
-      rovers.push(readInitialPosition(position, moves, plateau));
-      };
-      return console.log(rovers);
-  }
+      const rover = readInitialPosition(position, moves, newPlateau);
+      newRovers.push(rover);
+      const history = [{x: rover.x,y: rover.y, dir: rover.dir}, ...recordMoves(rover, newPlateau)];
+        newHistory.push(...history);
+    };
+    setRovers(newRovers);
+    setAllHistory(newHistory);
+    return (console.log(newRovers, newHistory));
+  };
 
-  for (const rover of rovers) {
-    const roverrecordMoves(rover, plateau);
-    console.log(finalPosition)
-  }
-    
   return (
     <>
       <div>
@@ -35,11 +44,12 @@ const App = () => {
         />
       </div>
       <div>
-         <button onClick={(e) => addInstructions(e)}>SIMULATE</button>
-      </div>
+        <button onClick={addInstructions}>SIMULATE</button>
+        </div>
+        {plateau && <Grid plateau={plateau} movesHistory={allHistory} />}
     </>
-  )
-}
+  );
+};
 
 export default App;
 
@@ -53,3 +63,10 @@ export default App;
 //     "MLMLLRMMM"
 // ]
 
+// 5 5
+// 1 2 N
+// LMLMLMLMM
+// 3 3 E
+// MMRMMRMRRM
+// 2 5 W
+// MLMLLRMMM
