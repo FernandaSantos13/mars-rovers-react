@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { Rover, Plateau, History } from './Rover';
+import { Rover, Plateau, History } from './logic';
 
-export const Grid = ({ plateau, movesHistory }: { plateau: Plateau, movesHistory: History[][] }) => {
+export const Grid = ({ plateau, movesHistory }: { plateau: Plateau, movesHistory: History[][][] }) => {
     const [currentRover, setCurrentRover] = useState(0);
     const [currentMove, setCurrentMove] = useState(0);  
     
@@ -41,7 +41,7 @@ export const Grid = ({ plateau, movesHistory }: { plateau: Plateau, movesHistory
 
                                     return (
                                         <td key={col} className="cell">
-                                            {roverPos && roverPos.x === col && roverPos.y === (plateau.maxY - row) ? roverPos.dir : ""}
+                                            {`${col} ${row}`/* {roverPos && roverPos.x === col && roverPos.y === (plateau.maxY - row) && roverPos.dir} */}
                                         </td>
                                     );
                                 })}

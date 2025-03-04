@@ -4,13 +4,17 @@ export const createPlateau = (input: string[]) => {
     return { maxX, maxY };
 }
 
-export type Plateau = ReturnType<typeof createPlateau>;
+export type Plateau = ReturnType<typeof createPlateau> | null;
 export type Rover = ReturnType<typeof readInitialPosition>;
 export type History = ReturnType<typeof recordMoves>;
 
 export const readInitialPosition = (position: string[], moves: string, plateau: Plateau) => {
     const x = parseInt(position[0]);
     const y = parseInt(position[1]);
+
+    if (!plateau) {
+        throw new Error("Plateau is not defined.");
+    }
 
     if (x > plateau.maxX || y > plateau.maxY || x < 0 || y < 0) {
         throw new Error("Out of bounds.");
@@ -87,7 +91,7 @@ export const recordMoves = (rover: Rover, plateau: Plateau) => {
         if (move === 'M') {
             const { newX, newY } = moveForward(x, y, dir);
             
-            if (newX > plateau.maxX || newY > plateau.maxY || newX < 0 || newY < 0) {
+            if (plateau && (newX > plateau.maxX || newY > plateau.maxY || newX < 0 || newY < 0)) {
                 position = { x, y , dir }
             }
 
